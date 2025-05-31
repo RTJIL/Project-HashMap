@@ -54,9 +54,6 @@ Collision Handling
 When two keys hash to the same index, values are stored in a bucket as an array of key-value pairs (chaining).
 
 ## 📁 File Structure
-arduino
-Copy
-Edit
 /hashmap-project
   ├── HashMap.js
   ├── HashSet.js (optional)
