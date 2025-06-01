@@ -23,12 +23,14 @@ class HashMap {
       throw new Error('Trying to access index out of bounds');
     }
 
-    if (this.filledCells > this.capacity / this.loadFactor) {
-      let newArray = new Array(this.capacity * 2);
-      let current = this.array[0];
-      while(current) {
-        newArray
-      }
+    if (this.filledCells > this.capacity * this.loadFactor) {
+      const oldEntries = this.entries();
+
+      this.capacity *= 2;
+      this.array = new Array(this.capacity);
+      this.filledCells = 0;
+
+      oldEntries.forEach(([k, v]) => this.set(k, v));
     }
 
     if (this.array[index] === undefined) {
@@ -52,7 +54,125 @@ class HashMap {
     this.filledCells++;
   }
 
-  get(key) {}
+  get(key) {
+    let i = 0;
+    let current = this.array[0];
+
+    while (i < this.array.length) {
+      while (current) {
+        if (current.key !== key) current = current.next;
+        else return current.value;
+      }
+      i++;
+    }
+    return null;
+  }
+
+  has(key) {
+    let i = 0;
+    let current = this.array[0];
+
+    while (i < this.array.length) {
+      while (current) {
+        if (current.key !== key) current = current.next;
+        else return true;
+      }
+      i++;
+    }
+    return false;
+  }
+
+  remove(key) {
+    let i = 0;
+
+    while (i < this.array.length) {
+      let current = this.array[i];
+      let prev = current;
+      while (current) {
+        if (!this.array[i].next && current.key === key) {
+          this.array.splice(i, 1);
+          this.filledCells--;
+          return true;
+        }
+        if (this.array[i].key === key) {
+          this.array[i] = current.next;
+          this.filledCells--;
+          return true;
+        }
+        if (current.key !== key) {
+          prev = current;
+          current = current.next;
+        } else {
+          prev.next = current.next;
+          this.filledCells--;
+          return true;
+        }
+      }
+      i++;
+    }
+    return false;
+  }
+
+  length() {
+    return this.filledCells;
+  }
+
+  clear() {
+    this.array.splice(0);
+    this.filledCells = 0;
+    this.array = new Array(16);
+    this.capacity = this.array.length;
+  }
+
+  keys() {
+    let i = 0;
+    let keys = [];
+
+    while (i < this.array.length) {
+      if (!this.array[i]) {
+        keys.push(null); // optional — normally you'd just skip it
+        i++;
+        continue;
+      }
+
+      let current = this.array[i];
+      while (current) {
+        keys.push(current.key);
+        current = current.next;
+      }
+      i++;
+    }
+
+    return keys;
+  }
+
+  values() {
+    let keys = [];
+
+    for (let i = 0; i < this.array.length; i++) {
+      let current = this.array[i];
+      while (current) {
+        keys.push(current.value);
+        current = current.next;
+      }
+    }
+
+    return keys;
+  }
+
+  entries() {
+    let entries = [];
+
+    for (let i = 0; i < this.array.length; i++) {
+      let current = this.array[i];
+      while (current) {
+        entries.push([current.key, current.value]);
+        current = current.next;
+      }
+    }
+
+    return entries;
+  }
 
   printHashMap() {
     this.array.forEach((e) => {
@@ -69,17 +189,4 @@ class Node {
   }
 }
 
-const hm1 = new HashMap();
-
-hm1.set(1233, 'dfrvdfgd');
-hm1.set('sfssdf', 34234);
-hm1.set('41', 'wwew2232');
-hm1.set(21, 'dfrvdfgd');
-hm1.set('lijwe', 321);
-hm1.set('41', 'kppoj');
-
-console.log(hm1);
-
-console.log('\n-------------------------------------\n');
-
-hm1.printHashMap();
+export { HashMap };
